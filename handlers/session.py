@@ -148,13 +148,11 @@ async def handle_answer(message: Message, state: FSMContext):
     user_answer = message.text.strip().lower()
     correct_normalized = correct_answer.strip().lower()
 
-    # Проверяем точное совпадение или через запятую
     user_variants = [v.strip() for v in user_answer.split(",")]
     exact_match = correct_normalized in user_variants
 
-    # Проверяем опечатки (расстояние Левенштейна <= 2)
     fuzzy_match = any(
-        Levenshtein.distance(v, correct_normalized) <= 2
+        distance(v, correct_normalized) <= 2
         for v in user_variants
     )
 
@@ -180,7 +178,6 @@ async def handle_answer(message: Message, state: FSMContext):
         errors=errors
     )
 
-    # Если слова закончились
     if index >= len(words):
         await message.answer(response, parse_mode="HTML")
         await show_results(message, state)
