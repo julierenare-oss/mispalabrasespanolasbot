@@ -1,4 +1,17 @@
-from Levenshtein import distance
+def distance(s1: str, s2: str) -> int:
+    if len(s1) < len(s2):
+        return distance(s2, s1)
+    if len(s2) == 0:
+        return len(s1)
+    prev = list(range(len(s2) + 1))
+    for i, c1 in enumerate(s1):
+        curr = [i + 1]
+        for j, c2 in enumerate(s2):
+            curr.append(min(prev[j + 1] + 1, curr[j] + 1, prev[j] + (c1 != c2)))
+        prev = curr
+    return prev[-1]
+
+
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
@@ -159,7 +172,7 @@ async def handle_answer(message: Message, state: FSMContext):
     if exact_match:
         correct_count += 1
         await update_word_stats(word["id"], correct=True)
-        response = f"✅ Правильно! +1"
+        response = "✅ Правильно! +1"
     elif fuzzy_match:
         correct_count += 1
         await update_word_stats(word["id"], correct=True)
